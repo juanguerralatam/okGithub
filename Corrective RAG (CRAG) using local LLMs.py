@@ -1,3 +1,8 @@
+### From
+# https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_crag_local/
+# adapted to local develpomrt
+###
+
 import getpass
 import os
 
@@ -15,7 +20,13 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores import SKLearnVectorStore
 from langchain_nomic.embeddings import NomicEmbeddings  # local
 from langchain_openai import OpenAIEmbeddings  # api
-
+from langchain.prompts import PromptTemplate
+from langchain_community.chat_models import ChatOllama
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.output_parsers import StrOutputParser
+from langchain_ollama import OllamaEmbeddings
+from langchain_core.output_parsers import StrOutputParser
+from langchain_community.tools.tavily_search import TavilySearchResults
 
 import os
 
@@ -54,7 +65,6 @@ embedding=OllamaEmbeddings(
 ),
 """
 
-from langchain_ollama import OllamaEmbeddings
 embedding = OllamaEmbeddings(
     model="llama3.3"
 )
@@ -68,9 +78,6 @@ retriever = vectorstore.as_retriever(k=min(4, len(doc_splits)))
 
 ### Retrieval Grader
 
-from langchain.prompts import PromptTemplate
-from langchain_community.chat_models import ChatOllama
-from langchain_core.output_parsers import JsonOutputParser
 
 # LLM
 llm = ChatOllama(model=local_llm, format="json", temperature=0)
@@ -105,7 +112,7 @@ docs = retriever.invoke(question)
 doc_txt = docs[1].page_content
 print(retrieval_grader.invoke({"question": question, "documents": doc_txt}))
 
-from langchain_core.output_parsers import StrOutputParser
+
 
 # Prompt
 prompt = PromptTemplate(
@@ -135,7 +142,7 @@ print(generation)
 
 ### Generate
 
-from langchain_core.output_parsers import StrOutputParser
+
 
 # Prompt
 prompt = PromptTemplate(
@@ -164,8 +171,6 @@ generation = rag_chain.invoke({"documents": docs, "question": question})
 print(generation)
 
 ### Search
-
-from langchain_community.tools.tavily_search import TavilySearchResults
 
 web_search_tool = TavilySearchResults(k=3)
 
